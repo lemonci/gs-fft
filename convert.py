@@ -19,13 +19,14 @@ parser = ArgumentParser("Colmap converter")
 parser.add_argument("--no_gpu", action='store_true')
 parser.add_argument("--skip_matching", action='store_true')
 parser.add_argument("--source_path", "-s", required=True, type=str)
-parser.add_argument("--camera", default="OPENCV", type=str)
+parser.add_argument("--camera", default="PINHOLE", type=str)
 parser.add_argument("--colmap_executable", default="", type=str)
 parser.add_argument("--resize", action="store_true")
 parser.add_argument("--magick_executable", default="", type=str)
 args = parser.parse_args()
 colmap_command = '"{}"'.format(args.colmap_executable) if len(args.colmap_executable) > 0 else "colmap"
 magick_command = '"{}"'.format(args.magick_executable) if len(args.magick_executable) > 0 else "magick"
+glomap_command = "glomap"
 use_gpu = 1 if not args.no_gpu else 0
 
 if not args.skip_matching:
@@ -59,8 +60,18 @@ if not args.skip_matching:
         --database_path " + args.source_path + "/distorted/database.db \
         --image_path "  + args.source_path + "/input \
         --output_path "  + args.source_path + "/distorted/sparse \
-        --Mapper.ba_global_function_tolerance=0.000001")
-    exit_code = os.system(mapper_cmd)
+        --Mapper.ba_global_function_tolerance=0.000001 " + \
+        "--Mapper.init_image_id1=4 " + \
+        "--Mapper.init_image_id2=8"    
+    )
+
+    mapper_cmd_g = (glomap_command + " mapper \
+        --database_path " + args.source_path + "/distorted/database.db \
+        --image_path "  + args.source_path + "/input \
+        --output_path "  + args.source_path + "/sparse"    
+    )
+
+    exit_code = os.system(mapper_cmd_g)
     if exit_code != 0:
         logging.error(f"Mapper failed with code {exit_code}. Exiting.")
         exit(exit_code)
@@ -72,20 +83,26 @@ img_undist_cmd = (colmap_command + " image_undistorter \
     --input_path " + args.source_path + "/distorted/sparse/0 \
     --output_path " + args.source_path + "\
     --output_type COLMAP")
-exit_code = os.system(img_undist_cmd)
+
+# Existing dataset has already been distorted.
+os.makedirs(args.source_path + "/images", exist_ok=True)
+img_cp = ("cp -a " + args.source_path + "/input/. "
+     + args.source_path + "/images/")
+
+exit_code = os.system(img_cp)
 if exit_code != 0:
     logging.error(f"Mapper failed with code {exit_code}. Exiting.")
     exit(exit_code)
 
-files = os.listdir(args.source_path + "/sparse")
-os.makedirs(args.source_path + "/sparse/0", exist_ok=True)
-# Copy each file from the source directory to the destination directory
-for file in files:
-    if file == '0':
-        continue
-    source_file = os.path.join(args.source_path, "sparse", file)
-    destination_file = os.path.join(args.source_path, "sparse", "0", file)
-    shutil.move(source_file, destination_file)
+# files = os.listdir(args.source_path + "/sparse")
+# os.makedirs(args.source_path + "/sparse/0", exist_ok=True)
+# # Copy each file from the source directory to the destination directory
+# for file in files:
+#     if file == '0':
+#         continue
+#     source_file = os.path.join(args.source_path, "sparse", file)
+#     destination_file = os.path.join(args.source_path, "sparse", "0", file)
+#     shutil.move(source_file, destination_file)
 
 if(args.resize):
     print("Copying and resizing...")
