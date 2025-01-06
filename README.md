@@ -7,7 +7,9 @@ This repository is code for the associated with the paper "Frequency-based View 
 
 Clone this repo with the flag `--recursive`.
 
-Follow the steps in [3D-GS](https://github.com/graphdeco-inria/gaussian-splatting) to create a conda environment and install the packages in `environment.yml`, as well as the submodules `diff-gaussian-rasterization` and `simple-knn`. Please note that if you are using Ubuntu 22+, you need to downgrade gcc and g++ to 9 to compile the submodules.
+Follow the steps in [3D-GS](https://github.com/graphdeco-inria/gaussian-splatting) to create a conda environment and install the packages in `environment.yml`, as well as the submodules `diff-gaussian-rasterization` and `simple-knn`.
+
+Please note that if you are using Ubuntu 22+, you need to downgrade gcc and g++ to 9 to compile the submodules.
 
 Install [colmap](https://colmap.github.io/install.html#build-from-source) and [glomap](https://github.com/colmap/glomap).
 
@@ -46,6 +48,7 @@ python3 gs-fft.py
 
 ### Parameters
 Lines 322-330 contain the parameters for input and output paths, iterations to train the Gaussian models and the iterations to select the next-best-views.
+
 Lines 95-100 contain the parameters the same as the ones in "Command Line Arguments for train.py" in [3D-GS](https://github.com/graphdeco-inria/gaussian-splatting).
 
 ## Citation
