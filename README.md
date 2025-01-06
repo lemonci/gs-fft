@@ -9,7 +9,7 @@ Clone this repo with the flag `--recursive`.
 
 Follow the steps in [3D-GS](https://github.com/graphdeco-inria/gaussian-splatting) to create a conda environment and install the packages in `environment.yml`, as well as the submodules `diff-gaussian-rasterization` and `simple-knn`.
 
-Please note that if you are using Ubuntu 22+, you need to downgrade gcc and g++ to 9 to compile the submodules.
+Please note that if you are using Ubuntu 24, you need to downgrade gcc and g++ to 9 to compile the submodules.
 
 Install [colmap](https://colmap.github.io/install.html#build-from-source) and [glomap](https://github.com/colmap/glomap).
 
